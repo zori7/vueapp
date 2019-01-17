@@ -98,6 +98,7 @@
                     this.comments = response.data['comments'];
                     this.user.name = response.data['username'];
                     this.user.id = response.data['userid'];
+                    this.images = [];
                     this.images.push({src: this.post.img});
                     $.each(response.data['images'], (key, image) => {
                         this.images.push(image);
