@@ -60,13 +60,13 @@
         },
         mounted () {
 
-            axios.get('/users/getusers').then((response) => {
+            axios.get('/api/users').then((response) => {
                 this.users = response.data[0];
                 this.posts = response.data[1];
                 this.setPage(1);
             });
 
-            axios.get('/isadmin').then((response) => {
+            axios.get('/api/isadmin').then((response) => {
                 this.isAdmin = response.data['isAdmin'];
             });
 
@@ -107,14 +107,14 @@
                 };
             },
             update() {
-                axios.get('/users/getusers').then((response) => {
+                axios.get('/api/users').then((response) => {
                     this.users = response.data[0];
                     this.posts = response.data[1];
                     this.setPage(1);
                 });
             },
             deleteUser(user) {
-                axios.post('/deleteuser', {id: user.id}).then((response) => {
+                axios.delete('/api/users/' + user.id).then((response) => {
                     this.update();
                 });
 
@@ -124,7 +124,7 @@
                 let email = this.user.email;
                 let password = this.user.password;
 
-                axios.post('/registerfromtable', {
+                axios.post('/api/users', {
 
                     name: name, email: email, password: password
 

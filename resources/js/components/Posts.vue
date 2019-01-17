@@ -45,12 +45,12 @@
         },
         mounted () {
 
-            axios.get('/posts/getposts').then((response) => {
+            axios.get('/api/posts').then((response) => {
                 this.posts = response.data;
                 this.setPage(1);
             });
 
-            axios.get('/isadmin').then((response) => {
+            axios.get('/api/isadmin').then((response) => {
                 this.isAdmin = response.data['isAdmin'];
                 this.user_id = response.data['user'].id;
             });
@@ -88,7 +88,7 @@
                 };
             },
             update() {
-                axios.get('/posts/getposts').then((response) => {
+                axios.get('/api/posts').then((response) => {
                     this.posts = response.data;
                     this.setPage(1);
                 });
@@ -97,7 +97,7 @@
                 return text.substring(0, 150);
             },
             deletePost(post) {
-                axios.post('/deletepost', {id: post.id}).then((response) => {
+                axios.delete('/api/posts/' + post.id).then((response) => {
                     this.update();
                 });
             }

@@ -40,12 +40,25 @@
                             <a class="nav-link" href="{{ route('users') }}">Users</a>
                         </li>--}}
                         {{--Vue-router--}}
+
+
+
                         <li class="nav-item mx-2">
-                            <router-link to="/posts" class="nav-link">Posts</router-link>
+                            @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
+                                <a href="{{ route('login') }}" class="nav-link">Posts</a>
+                            @else
+                                <router-link to="/posts" class="nav-link">Posts</router-link>
+                            @endif
                         </li>
                         <li class="nav-item mx-2">
-                            <router-link to="/users" class="nav-link">Users</router-link>
+                            @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
+                                <a href="{{ route('login') }}" class="nav-link">Users</a>
+                            @else
+                                <router-link to="/users" class="nav-link">Users</router-link>
+                            @endif
                         </li>
+
+
 
                     </ul>
 
@@ -92,7 +105,9 @@
 
         <main class="py-4">
             @yield('content')
-            <router-view></router-view>
+            @if (!(Request::is('login') || Request::is('register') || Request::is('password/*')))
+                <router-view></router-view>
+            @endif
         </main>
     </div>
 </body>

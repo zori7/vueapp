@@ -28,7 +28,7 @@
         },
         props: ['id'],
         mounted () {
-            axios.get('/user/' + this.id).then((response) => {
+            axios.get('/api/users/' + this.id).then((response) => {
                 this.user = response.data['user'];
                 this.isAdmin = response.data['isAdmin'];
             });

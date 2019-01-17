@@ -9,7 +9,7 @@
             <input type="email" class="form-control" name="email" id="email" v-model="user.email">
         </div>
         <div class="form-group">
-            <label for="password">New password</label>
+            <label for="password">New password <span class="text-info">[optional]</span></label>
             <input type="password" class="form-control" name="password" id="password" placeholder="Password" v-model="user.password">
         </div>
         <button class="btn btn-success" @click="save()">Save</button>
@@ -25,7 +25,7 @@
         },
         props: ['id'],
         mounted () {
-            axios.get('/edit/user/' + this.id).then((response) => {
+            axios.get('/api/users/' + this.id + '/edit').then((response) => {
                 this.user = response.data['user'];
             });
         },
@@ -37,7 +37,7 @@
                     return false;
                 }
 
-                axios.post('/edit/user/' + this.id, {name: this.user.name, email: this.user.email, password: this.user.password}).then(() => {
+                axios.put('/api/users/' + this.id, {name: this.user.name, email: this.user.email, password: this.user.password}).then(() => {
                     this.$router.push('/user/' + this.user.id);
                 });
 
