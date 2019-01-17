@@ -82,8 +82,7 @@
                 return this.pagination.endIndex + 1;
             },
             filled () {
-                if(this.user.name != "" && this.user.email != "" && this.user.password != "") return true;
-                else return false;
+                return this.user.name !== "" && this.user.email !== "" && this.user.password !== "";
             }
         },
         methods: {
@@ -114,7 +113,7 @@
                 });
             },
             deleteUser(user) {
-                axios.delete('/api/users/' + user.id).then((response) => {
+                axios.delete('/api/users/' + user.id).then(() => {
                     this.update();
                 });
 
@@ -128,7 +127,7 @@
 
                     name: name, email: email, password: password
 
-                }).then((response) => {
+                }).then(() => {
                     this.update();
                     this.user.name = "";
                     this.user.email = "";

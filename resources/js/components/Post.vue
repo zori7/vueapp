@@ -28,7 +28,7 @@
             </div>
 
             <div class="col-md-12 text-center">
-                <h1 class="text-primary">{{ post.name }} <i class="text-info">by {{ username }}</i></h1>
+                <h1 class="text-primary">{{ post.name }} by <router-link :to="'/user/' + user.id" class="text-info">{{ user.name }}</router-link></h1>
 
                 <p>
                     {{ post.text }}
@@ -37,41 +37,89 @@
 
         </div>
 
+        <hr>
+
+        <comment v-for="comment in comments" :comment_id="comment" :key="comment"></comment>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="my-3 col-md-6">
+
+                    <form @submit.prevent="saveComment()" method="post">
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-model="comment.text" placeholder="Your comment here">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script>
+
+    import comment from "./Comment.vue";
+
     export default {
         data: function () {
             return {
                 post: {
                     img: ""
                 },
-                username: "",
-                images: []
+                user: {
+                    name: "",
+                    id: -1
+                },
+                images: [],
+                comments: [],
+                comment: {
+                    text: ""
+                }
             }
+        },
+        components: {
+          comment: comment
         },
         props: ['id'],
         mounted() {
-            axios.get('/api/posts/' + this.id).then((response) => {
+            this.update();
+        },
+        methods: {
+            update () {
+                axios.get('/api/posts/' + this.id).then((response) => {
 
-                /*for(var i = 1; i <= response.data['images'].length; i++){
-                    let str = '<li data-target="#carouselExampleIndicators" data-slide-to="' + i + '" class="active"></li>';
-                    this.$refs.ind.append(str);
-                }*/
+                    this.post = response.data['post'];
+                    this.comments = response.data['comments'];
+                    this.user.name = response.data['username'];
+                    this.user.id = response.data['userid'];
+                    this.images.push({src: this.post.img});
+                    $.each(response.data['images'], (key, image) => {
+                        this.images.push(image);
+                    });
 
-                this.post = response.data['post'];
-                this.username = response.data['username'];
-                this.images.push({src: this.post.img});
-                $.each(response.data['images'], (key, image) => {
-                    this.images.push(image);
+                    setTimeout(function () {
+                        $('.carousel-item').first().addClass('active');
+                    }, 500);
+
+                });
+            },
+            saveComment () {
+
+                axios.post('/api/comments', {
+                    'text': this.comment.text,
+                    'post_id': this.id
+                }).then(() => {
+                    this.update ();
                 });
 
-                setTimeout(function () {
-                    $('.carousel-item').first().addClass('active');
-                }, 500);
-
-            });
+                this.comment.text = "";
+            }
         }
     }
 </script>

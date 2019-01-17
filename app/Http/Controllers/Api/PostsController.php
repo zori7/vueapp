@@ -95,7 +95,13 @@ class PostsController extends Controller
 
         $images = Image::where('post_id', $id)->where('src', '!=', $post->img)->get();
 
-        $data = ['username' => $username, 'post' => $post, 'images' => $images];
+        $comments = [];
+
+        foreach($post->comments as $comment) {
+            $comments[] = $comment->id;
+        }
+
+        $data = ['username' => $username, 'userid' => $post->user_id, 'post' => $post, 'images' => $images, 'comments' => $comments];
 
         return $data;
     }

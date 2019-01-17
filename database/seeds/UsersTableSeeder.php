@@ -12,7 +12,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 0; $i < 30; $i++) {
+
+        for($i = 0; $i < 10; $i++) {
             $num = rand(1, 100);
             DB::table('users')->insert([
                 'name' => 'User num ' . $num,

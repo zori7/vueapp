@@ -29,4 +29,8 @@ Route::prefix('api')->group(function () {
 
     Route::post('admin/delete/{id}', 'Api\UsersController@deleteAdmin');
 
+    Route::get('/comments/{id}', 'Api\CommentsController@show');
+
+    Route::post('/comments', 'Api\CommentsController@store');
+
 });
