@@ -25,4 +25,8 @@ Route::prefix('api')->group(function () {
 
     Route::get('/isadmin', 'Api\UsersController@isAdmin');
 
+    Route::post('admin/make/{id}', 'Api\UsersController@makeAdmin');
+
+    Route::post('admin/delete/{id}', 'Api\UsersController@deleteAdmin');
+
 });

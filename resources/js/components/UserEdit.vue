@@ -10,7 +10,7 @@
         </div>
         <div class="form-group">
             <label for="password">New password <span class="text-info">[optional]</span></label>
-            <input type="password" class="form-control" name="password" id="password" placeholder="Password" v-model="user.password">
+            <input type="password" class="form-control" name="password" id="password" placeholder="[old password]" v-model="user.password">
         </div>
         <button class="btn btn-success" @click="save()">Save</button>
     </div>

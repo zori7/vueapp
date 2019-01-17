@@ -2315,21 +2315,50 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       user: {},
-      isAdmin: false
+      isAdmin: false,
+      authAdmin: false
     };
   },
   props: ['id'],
   mounted: function mounted() {
     var _this = this;
 
-    axios.get('/api/users/' + this.id).then(function (response) {
-      _this.user = response.data['user'];
-      _this.isAdmin = response.data['isAdmin'];
+    this.update();
+    axios.get('/api/isadmin').then(function (response) {
+      _this.authAdmin = response.data['isAdmin'];
     });
+  },
+  methods: {
+    update: function update() {
+      var _this2 = this;
+
+      axios.get('/api/users/' + this.id).then(function (response) {
+        _this2.user = response.data['user'];
+        _this2.isAdmin = response.data['isAdmin'];
+      });
+    },
+    makeAdmin: function makeAdmin(id) {
+      var _this3 = this;
+
+      axios.post('api/admin/make/' + id).then(function () {
+        _this3.update();
+      });
+    },
+    deleteAdmin: function deleteAdmin(id) {
+      var _this4 = this;
+
+      axios.post('api/admin/delete/' + id).then(function () {
+        _this4.update();
+      });
+    }
   }
 });
 
@@ -38943,7 +38972,38 @@ var render = function() {
         _c("br"),
         _vm._v("\n            Joined: " + _vm._s(_vm.user.created_at)),
         _c("br"),
-        _vm._v("\n            Admin: " + _vm._s(_vm.isAdmin) + "\n\n        ")
+        _vm._v(
+          "\n            Admin: " + _vm._s(_vm.isAdmin) + "\n\n            "
+        ),
+        _vm.authAdmin && _vm.isAdmin === "No"
+          ? _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                on: {
+                  click: function($event) {
+                    _vm.makeAdmin(_vm.user.id)
+                  }
+                }
+              },
+              [_vm._v("Make admin")]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.authAdmin && _vm.isAdmin === "Yes"
+          ? _c(
+              "button",
+              {
+                staticClass: "btn btn-danger",
+                on: {
+                  click: function($event) {
+                    _vm.deleteAdmin(_vm.user.id)
+                  }
+                }
+              },
+              [_vm._v("Delete admin")]
+            )
+          : _vm._e()
       ])
     ])
   ])
@@ -39040,7 +39100,7 @@ var render = function() {
           type: "password",
           name: "password",
           id: "password",
-          placeholder: "Password"
+          placeholder: "[old password]"
         },
         domProps: { value: _vm.user.password },
         on: {

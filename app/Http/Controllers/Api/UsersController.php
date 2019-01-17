@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use App\Post;
+use DB;
 
 class UsersController extends Controller
 {
@@ -158,6 +159,21 @@ class UsersController extends Controller
             if($role->name == 'admin') $data['isAdmin'] = true;
         }
         return $data;
+
+    }
+
+    public function makeAdmin ($id) {
+
+        DB::table('role_user')->insert([
+            'user_id' => $id,
+            'role_id' => 1
+        ]);
+
+    }
+
+    public function deleteAdmin ($id) {
+
+        DB::table('role_user')->where('user_id', $id)->delete();
 
     }
 }
