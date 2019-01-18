@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use App\Post;
+use App\Comment;
+use App\Answer;
 use DB;
+use App\Image;
+use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
 {
@@ -138,9 +142,40 @@ class UsersController extends Controller
 
         $user = User::find($id);
 
-        $posts = Post::where('user_id', $user->id);
+        $posts = Post::where('user_id', $user->id)->get();
 
-        $posts->delete();
+        foreach($posts as $post) {
+            foreach($post->comments as $comment) {
+                $comment->answers()->delete();
+            }
+
+            $post->comments()->delete();
+
+            $images = Image::where('post_id', $post->id)->get();
+
+            foreach($images as $image) {
+                Storage::delete(substr_replace($image->src, 'public', 0, 7));
+            }
+
+            foreach($images as $image) {
+                $image->delete();
+            }
+
+            $post->delete();
+        }
+
+        $comments = Comment::where('user_id', $id)->get();
+
+        foreach($comments as $comment) {
+            $comment->answers()->delete();
+            $comment->delete();
+        }
+
+        $answers = Answer::where('user_id', $id)->get();
+
+        foreach($answers as $answer) {
+            $answer->delete();
+        }
 
         $user->delete();
 

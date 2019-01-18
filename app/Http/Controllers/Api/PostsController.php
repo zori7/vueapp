@@ -89,19 +89,29 @@ class PostsController extends Controller
      */
     public function show($id)
     {
+
+        $user = Auth::user()->id;
+
         $post = Post::find($id);
 
         $username = User::find($post->user_id)->name;
 
         $images = Image::where('post_id', $id)->where('src', '!=', $post->img)->get();
 
-        $comments = [];
+        $comments = $post->comments()->orderBy('created_at', 'desc')->get();
 
-        foreach($post->comments as $comment) {
-            $comments[] = $comment->id;
+        foreach($comments as $key => $comment) {
+            $comments[$key] = $comment->id;
         }
 
-        $data = ['username' => $username, 'userid' => $post->user_id, 'post' => $post, 'images' => $images, 'comments' => $comments];
+        $data = [
+            'username' => $username,
+            'userid' => $post->user_id,
+            'post' => $post,
+            'images' => $images,
+            'comments' => $comments,
+            'user' => $user
+        ];
 
         return $data;
     }
@@ -182,6 +192,14 @@ class PostsController extends Controller
     {
 
         $post = Post::find($id);
+
+        foreach($post->comments as $comment) {
+            $comment->answers()->delete();
+        }
+
+        $post->comments()->delete();
+
+
 
         $images = Image::where('post_id', $post->id)->get();
 

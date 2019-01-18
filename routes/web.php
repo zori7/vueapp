@@ -33,4 +33,16 @@ Route::prefix('api')->group(function () {
 
     Route::post('/comments', 'Api\CommentsController@store');
 
+    Route::post('/comments/edit/{id}', 'Api\CommentsController@update');
+
+    Route::delete('/comments/{id}', 'Api\CommentsController@destroy');
+
+    Route::get('/answers/{id}', 'Api\AnswersController@show');
+
+    Route::post('/answers', 'Api\AnswersController@store');
+
+    Route::post('/answers/edit/{id}', 'Api\AnswersController@update');
+
+    Route::delete('/answers/{id}', 'Api\AnswersController@destroy');
+
 });

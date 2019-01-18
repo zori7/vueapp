@@ -39,8 +39,6 @@
 
         <hr>
 
-        <comment v-for="comment in comments" :comment_id="comment" :key="comment"></comment>
-
         <div class="container">
             <div class="row justify-content-center">
                 <div class="my-3 col-md-6">
@@ -48,16 +46,20 @@
                     <form @submit.prevent="saveComment()" method="post">
 
                         <div class="form-group">
-                            <input type="text" class="form-control" v-model="comment.text" placeholder="Your comment here">
+                            <button type="submit" class="btn btn-block btn-primary">Submit</button>
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <div class="form-group">
+                            <input type="text" class="form-control" v-model="comment.text" placeholder="Your comment here">
+                        </div>
 
                     </form>
 
                 </div>
             </div>
         </div>
+
+        <comment v-for="comment in comments" :comment_id="comment" :key="comment"></comment>
 
     </div>
 </template>
@@ -80,7 +82,9 @@
                 comments: [],
                 comment: {
                     text: ""
-                }
+                },
+                currentUser: -1,
+                isAdmin: false
             }
         },
         components: {
@@ -89,16 +93,21 @@
         props: ['id'],
         mounted() {
             this.update();
+
+            axios.get('/api/isadmin').then((response) => {
+               this.isAdmin = response.data['isAdmin'];
+            });
+
         },
         methods: {
             update () {
                 axios.get('/api/posts/' + this.id).then((response) => {
 
+                    this.currentUser = response.data['user'];
                     this.post = response.data['post'];
                     this.comments = response.data['comments'];
                     this.user.name = response.data['username'];
                     this.user.id = response.data['userid'];
-                    this.images = [];
                     this.images.push({src: this.post.img});
                     $.each(response.data['images'], (key, image) => {
                         this.images.push(image);
@@ -110,13 +119,28 @@
 
                 });
             },
+            updateComments () {
+                axios.get('/api/posts/' + this.id).then((response) => {
+                    this.comments = response.data['comments'];
+                });
+            },
             saveComment () {
+
+                if(this.comment.text === "") {
+                    alert("Your comment is empty!");
+                    return false;
+                }
+
+                if(this.comment.text.length > 255) {
+                    alert("Your comment is too long!");
+                    return false;
+                }
 
                 axios.post('/api/comments', {
                     'text': this.comment.text,
                     'post_id': this.id
                 }).then(() => {
-                    this.update ();
+                    this.updateComments ();
                 });
 
                 this.comment.text = "";

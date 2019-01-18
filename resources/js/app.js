@@ -18,9 +18,6 @@ import post from "./components/Post.vue";
 import postedit from "./components/PostEdit.vue";
 import postcreate from "./components/PostCreate.vue";
 
-/*const posts = { template: '<div>Posts</div>' };
-const users = { template: '<div>Users</div>' };*/
-
 const routes = [
     { path: '/posts', component: posts },
     { path: '/users', component: users },

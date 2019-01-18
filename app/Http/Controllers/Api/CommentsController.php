@@ -18,7 +18,6 @@ class CommentsController extends Controller
 
         $comment->text = $request['text'];
         $comment->post_id = $request['post_id'];
-        $comment->is_answer = false;
 
         $user->comments()->save($comment);
 
@@ -28,12 +27,36 @@ class CommentsController extends Controller
 
         $comment = Comment::find($id);
 
-        $username = User::find($comment->user_id)->name;
+        $user = User::find($comment->user_id);
+
+        $answers = $comment->answers()->get();
+
+        foreach($answers as $key => $answer) {
+            $answers[$key] = $answer->id;
+        }
 
         return [
             'comment' => $comment,
-            'username' => $username
+            'user' => $user,
+            'answers' => $answers
         ];
+
+    }
+
+    public function update (Request $request, $id) {
+        $comment = Comment::find($id);
+
+        $comment->text = $request['text'];
+
+        $comment->save();
+
+    }
+
+    public function destroy ($id) {
+
+        $comment = Comment::find($id);
+
+        $comment->delete();
 
     }
 }
