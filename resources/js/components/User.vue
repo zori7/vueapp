@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container py-4">
 
         <div class="user row">
 
@@ -10,9 +10,9 @@
                 Joined: {{ user.created_at }}<br>
                 Admin: {{ isAdmin }}
 
-                <button class="btn btn-primary" v-if="authAdmin && isAdmin === 'No'" @click="makeAdmin(user.id)">Make admin</button>
+                <button class="btn btn-primary btn-sm" v-if="authAdmin && isAdmin === 'No'" @click="makeAdmin(user.id)">Make admin</button>
 
-                <button class="btn btn-danger" v-if="authAdmin && isAdmin === 'Yes'" @click="deleteAdmin(user.id)">Delete admin</button>
+                <button class="btn btn-danger btn-sm" v-if="authAdmin && isAdmin === 'Yes'" @click="deleteAdmin(user.id)">Delete admin</button>
 
             </div>
 

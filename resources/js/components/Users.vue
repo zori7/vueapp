@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container py-4">
         <div class="table-responsive">
             <table class="table table-condensed table-striped table-hover table-bordered">
                 <thead>
@@ -14,8 +14,8 @@
                 <tr v-for="user in collection">
                     <th scope="row">{{ user.id }}
                         <div class="btn-group float-right">
-                            <button class="btn btn-danger btn-xs" v-if="isAdmin" @click.prevent="deleteUser(user)">Delete</button>
-                            <router-link v-bind:to="'/edit/user/' + user.id" class="btn btn-info btn-xs" v-if="isAdmin">Edit</router-link>
+                            <button class="btn btn-danger btn-sm" v-if="isAdmin" @click.prevent="deleteUser(user)">Delete</button>
+                            <router-link v-bind:to="'/edit/user/' + user.id" class="btn btn-info btn-sm" v-if="isAdmin">Edit</router-link>
                         </div>
                     </th>
                     <td><router-link v-bind:to="'/user/' + user.id">{{ user.name }}</router-link></td>

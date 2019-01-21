@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container py-4">
 
         <router-link to="/create/post" class="btn btn-primary">Create post</router-link>
 

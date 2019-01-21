@@ -33,15 +33,8 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto mx-3">
-                        {{--<li class="nav-item mx-2">
-                            <a class="nav-link" href="{{ route('posts') }}">Posts</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link" href="{{ route('users') }}">Users</a>
-                        </li>--}}
+
                         {{--Vue-router--}}
-
-
 
                         <li class="nav-item mx-2">
                             @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
@@ -50,6 +43,7 @@
                                 <router-link to="/posts" class="nav-link">Posts</router-link>
                             @endif
                         </li>
+
                         <li class="nav-item mx-2">
                             @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
                                 <a href="{{ route('login') }}" class="nav-link">Users</a>
@@ -58,7 +52,13 @@
                             @endif
                         </li>
 
-
+                        <li class="nav-item mx-2">
+                            @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
+                                <a href="{{ route('login') }}" class="nav-link">Global chat</a>
+                            @else
+                                <router-link to="/global-chat" class="nav-link">Global chat</router-link>
+                            @endif
+                        </li>
 
                     </ul>
 
@@ -103,12 +103,12 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <div class="container-fluid">
             @yield('content')
             @if (!(Request::is('login') || Request::is('register') || Request::is('password/*')))
                 <router-view></router-view>
             @endif
-        </main>
+        </div>
     </div>
 </body>
 </html>
