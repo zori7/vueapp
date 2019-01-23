@@ -45,8 +45,4 @@ Route::prefix('api')->group(function () {
 
     Route::delete('/answers/{id}', 'Api\AnswersController@destroy');
 
-    Route::get('/chat/send-message', 'Api\ChatController@sendMessage');
-
-    Route::get('/global', 'Api\ChatController@index');
-
 });

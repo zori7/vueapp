@@ -1,5 +1,5 @@
 <template>
-    <div class="container py-4" v-if="show">
+    <div class="container" v-if="show">
         <div class="jumbotron">
             <h1 class="display-4">Welcome to Vue App!</h1>
             <p class="lead">This is a simple Vue.js application with basic functions</p>

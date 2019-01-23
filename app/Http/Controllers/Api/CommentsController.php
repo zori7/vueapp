@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Comment;
 use App\User;
-use App\Answer;
 use Auth;
 
 class CommentsController extends Controller
@@ -56,10 +55,6 @@ class CommentsController extends Controller
     public function destroy ($id) {
 
         $comment = Comment::find($id);
-
-        foreach($comment->answers as $answer) {
-            $answer->delete();
-        }
 
         $comment->delete();
 

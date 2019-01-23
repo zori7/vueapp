@@ -1,5 +1,5 @@
 <template>
-    <div class="container py-4">
+    <div class="container">
 
         <!--<form @submit="save" id="editpost" enctype="multipart/form-data">
 

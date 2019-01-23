@@ -11,7 +11,6 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 
 import posts from "./components/Posts.vue";
 import users from "./components/Users.vue";
-import globalChat from "./components/GlobalChat.vue";
 import home from "./components/Home.vue";
 import user from "./components/User.vue";
 import useredit from "./components/UserEdit.vue";
@@ -22,7 +21,6 @@ import postcreate from "./components/PostCreate.vue";
 const routes = [
     { path: '/posts', component: posts },
     { path: '/users', component: users },
-    { path: '/global-chat', component: globalChat },
     { path: '/', component: home },
     { path: '/user/:id', component: user, props: true },
     { path: '/edit/user/:id', component: useredit, props: true},
