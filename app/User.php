@@ -46,4 +46,8 @@ class User extends Authenticatable
     public function answers () {
         return $this->hasMany('App\Answer');
     }
+
+    public function privateMessages () {
+        return $this->hasMany('App\PrivateMessage');
+    }
 }

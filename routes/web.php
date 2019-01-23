@@ -23,6 +23,8 @@ Route::prefix('api')->group(function () {
 
     Route::resource('users', 'Api\UsersController');
 
+    Route::resource('pm', 'Api\PrivateChatController');
+
     Route::get('/isadmin', 'Api\UsersController@isAdmin');
 
     Route::post('admin/make/{id}', 'Api\UsersController@makeAdmin');

@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    {{--Pusher--}}
+
+    <meta name="pusher_key" content="{{ config('pusher.app_key', '') }}">
+    <meta name="pusher_cluster" content="{{ config('pusher.app_cluster', '') }}">
+
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
@@ -33,15 +38,8 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto mx-3">
-                        {{--<li class="nav-item mx-2">
-                            <a class="nav-link" href="{{ route('posts') }}">Posts</a>
-                        </li>
-                        <li class="nav-item mx-2">
-                            <a class="nav-link" href="{{ route('users') }}">Users</a>
-                        </li>--}}
-                        {{--Vue-router--}}
 
-
+                        {{--Vue-router-links--}}
 
                         <li class="nav-item mx-2">
                             @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
@@ -50,6 +48,7 @@
                                 <router-link to="/posts" class="nav-link">Posts</router-link>
                             @endif
                         </li>
+
                         <li class="nav-item mx-2">
                             @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
                                 <a href="{{ route('login') }}" class="nav-link">Users</a>
@@ -58,7 +57,13 @@
                             @endif
                         </li>
 
-
+                        <li class="nav-item mx-2">
+                            @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
+                                <a href="{{ route('login') }}" class="nav-link">Users</a>
+                            @else
+                                <router-link to="/messages" class="nav-link">Chats</router-link>
+                            @endif
+                        </li>
 
                     </ul>
 
