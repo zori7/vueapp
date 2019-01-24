@@ -32,13 +32,30 @@ class PrivateChatController extends Controller
 
         $users = [];
 
-        foreach($chats as $chat) {
-            $users[] = User::find($chat);
+        $messages = [];
+
+        foreach($chats as $key => $chat) {
+            $users[$key] = User::find($chat);
+
+            if(
+                DB::table('private_messages')->where([
+                    ['user_id', '=', $chat],
+                    ['target_user_id', '=', $user->id],
+                    ['message_read', '=', 0]
+                ])->exists()
+            ) {
+                $messages[$key] = DB::table('private_messages')->where([
+                    ['user_id', '=', $chat],
+                    ['target_user_id', '=', $user->id],
+                    ['message_read', '=', 0]
+                ])->orderBy('created_at', 'desc')->first()->text;
+            }
         }
 
         $data = [
             'chats' => $chats,
-            'users' => $users
+            'users' => $users,
+            'messages' => $messages
         ];
 
         return $data;
@@ -70,7 +87,8 @@ class PrivateChatController extends Controller
             'target_user_id' => $request['target_user_id']
         ]);
 
-        event(new PrivateMessage($request->all()));
+        event(new PrivateMessage(array_merge($request->all(), ['id' => $message->id])));
+
         return $message->id;
     }
 

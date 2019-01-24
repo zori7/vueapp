@@ -53,11 +53,16 @@
                         text: data.text,
                         class: 'response'
                     });
+
+                    axios.post('/api/readmessage/' + data.id);
+
                     setTimeout(() => {
                         let chat = document.getElementById("chat");
                         chat.scrollTop = chat.scrollHeight;
                     }, 300);
                 });
+
+                axios.post('/api/readall/' + this.id);
             });
 
             axios.get('/api/users/' + this.id).then((response) => {

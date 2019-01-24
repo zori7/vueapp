@@ -61,7 +61,12 @@
                             @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
                                 <a href="{{ route('login') }}" class="nav-link">Chats</a>
                             @else
-                                <router-link to="/messages" class="nav-link">Chats</router-link>
+                                <router-link to="/messages" class="nav-link">
+                                    Chats
+                                    @if($messagesCount > 0)
+                                        <span class="badge badge-dark">{{ $messagesCount }}</span>
+                                    @endif
+                                </router-link>
                             @endif
                         </li>
 

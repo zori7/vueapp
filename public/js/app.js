@@ -2764,11 +2764,13 @@ __webpack_require__.r(__webpack_exports__);
           class: 'response'
         });
 
+        axios.post('/api/readmessage/' + data.id);
         setTimeout(function () {
           var chat = document.getElementById("chat");
           chat.scrollTop = chat.scrollHeight;
         }, 300);
       });
+      axios.post('/api/readall/' + _this.id);
     });
     axios.get('/api/users/' + this.id).then(function (response) {
       _this.targetUser = response.data['user'];
@@ -2835,11 +2837,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       chats: [],
-      users: []
+      users: [],
+      messages: []
     };
   },
   mounted: function mounted() {
@@ -2848,6 +2854,7 @@ __webpack_require__.r(__webpack_exports__);
     axios.get('/api/pm').then(function (response) {
       _this.chats = response.data['chats'];
       _this.users = response.data['users'];
+      _this.messages = response.data['messages'];
     });
   }
 });
@@ -50458,7 +50465,17 @@ var render = function() {
             staticClass: "list-group-item list-group-item-action",
             attrs: { to: "/pm/" + chat }
           },
-          [_vm._v(_vm._s(_vm.users[key].name))]
+          [
+            _vm._v(
+              "\n            " + _vm._s(_vm.users[key].name) + "\n            "
+            ),
+            _vm.messages[key]
+              ? _c("span", { staticClass: "text-primary" }, [
+                  _vm._v(" - new message: "),
+                  _c("h3", [_vm._v(_vm._s(_vm.messages[key]))])
+                ])
+              : _vm._e()
+          ]
         )
       }),
       1

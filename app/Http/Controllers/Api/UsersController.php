@@ -17,6 +17,7 @@ use DB;
 use App\Image;
 use Illuminate\Support\Facades\Storage;
 use Gate;
+use App\PrivateMessage as Message;
 
 class UsersController extends Controller
 {
@@ -188,8 +189,27 @@ class UsersController extends Controller
     }
 
     public function deleteAdmin (User $user) {
-
         DB::table('role_user')->where('user_id', $user->id)->delete();
+    }
 
+    public function readMessage (Message $message) {
+        $message->message_read = 1;
+        $message->save();
+    }
+
+    public function readAllMessages (User $user) {
+        if(
+            DB::table('private_messages')->where([
+                ['user_id', '=', $user->id],
+                ['target_user_id', '=', Auth::user()->id],
+                ['message_read', '=', 0]
+        ])->exists()
+        ) {
+            DB::table('private_messages')->where([
+                ['user_id', '=', $user->id],
+                ['target_user_id', '=', Auth::user()->id],
+                ['message_read', '=', 0]
+            ])->update(['message_read' => 1]);
+        }
     }
 }

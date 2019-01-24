@@ -20,6 +20,7 @@ class CreatePrivateMessagesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedInteger('target_user_id');
             $table->foreign('target_user_id')->references('id')->on('users');
+            $table->boolean('message_read');
             $table->timestamps();
         });
     }

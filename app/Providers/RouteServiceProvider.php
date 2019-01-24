@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\PrivateMessage;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 
@@ -9,6 +10,7 @@ use App\Post;
 use App\User;
 use App\Comment;
 use App\Answer;
+use App\PrivateMessage as Message;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::model('user', User::class);
         Route::model('comment', Comment::class);
         Route::model('answer', Answer::class);
+        Route::model('message', Message::class);
 
         parent::boot();
     }

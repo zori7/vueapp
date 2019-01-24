@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use DB;
+use App\User;
+
 
 class HomeController extends Controller
 {
@@ -24,6 +27,21 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+
+        $fromUsers = [];
+
+        $messages = DB::table('private_messages')->where([
+            ['target_user_id', '=', Auth::user()->id],
+            ['message_read', '=', 0]
+        ])->get();
+
+        foreach($messages as $message) {
+            if(!in_array($message->user_id, $fromUsers)) {
+                $fromUsers[] = $message->user_id;
+            }
+        }
+        return view('home', [
+            'messagesCount' => count($fromUsers)
+        ]);
     }
 }

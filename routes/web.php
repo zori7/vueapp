@@ -24,6 +24,9 @@ Route::prefix('api')->group(function () {
     Route::resource('comments', 'Api\CommentsController');
     Route::resource('answers', 'Api\AnswersController');
 
+    Route::post('/readmessage/{message}', 'Api\UsersController@readMessage');
+    Route::post('/readall/{user}', 'Api\UsersController@readAllMessages');
+
     Route::get('/isadmin', 'Api\UsersController@isAdmin');
 
     Route::post('admin/make/{user}', 'Api\UsersController@makeAdmin');
