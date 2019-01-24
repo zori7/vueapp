@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
             $num = rand(1, 100);
             DB::table('users')->insert([
                 'name' => 'User num ' . $num,
-                'email' => 'user' . $num . '.@mail.ru',
+                'email' => 'user' . $num . '@mail.ru',
                 'password' => Hash::make(($num * $num + $num - 2 * ($num - 1)))
             ]);
         }

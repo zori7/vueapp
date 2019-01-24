@@ -97,7 +97,7 @@
                     return false;
                 }
 
-                axios.post('/api/answers/edit/' + this.answer.id, {
+                axios.put('/api/answers/' + this.answer.id, {
                     'text': this.editedAnswer.text,
                 }).then(() => {
                     this.update();

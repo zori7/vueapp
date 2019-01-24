@@ -143,7 +143,7 @@
                     return false;
                 }
 
-                axios.post('/api/comments/edit/' + this.comment.id, {
+                axios.put('/api/comments/' + this.comment.id, {
                     'text': this.editedComment.text,
                 }).then(() => {
                     this.update();

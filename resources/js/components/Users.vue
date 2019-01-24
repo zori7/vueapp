@@ -28,7 +28,7 @@
                         <span v-else>New user:</span>
                     </th>
                     <td><input type="text" class="form-control" v-model="user.name" placeholder="Name"></td>
-                    <td><input type="text" class="form-control" v-model="user.email" placeholder="email"></td>
+                    <td><input type="email" class="form-control" v-model="user.email" placeholder="email"></td>
                     <td><input type="password" class="form-control" v-model="user.password" placeholder="password"></td>
                 </tr>
                 </tbody>

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\PostRequest\PostStoreRequest;
+use App\Http\Requests\PostRequest\PostUpdateRequest;
 use App\Http\Controllers\Controller;
 use App\Post;
 use Auth;
@@ -49,15 +51,10 @@ class PostsController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function store(Request $request)
+    public function store(PostStoreRequest $request)
     {
 
         $post = new Post;
-
-        $this->validate($request, [
-            'name' => 'required',
-            'text' => 'required'
-        ]);
 
         $post->name = $request['name'];
         $post->text = $request['text'];
@@ -87,16 +84,14 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
 
         $user = Auth::user()->id;
 
-        $post = Post::find($id);
-
         $username = User::find($post->user_id)->name;
 
-        $images = Image::where('post_id', $id)->where('src', '!=', $post->img)->get();
+        $images = Image::where('post_id', $post->id)->where('src', '!=', $post->img)->get();
 
         $comments = $post->comments()->orderBy('created_at', 'desc')->get();
 
@@ -122,11 +117,9 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        $post = Post::find($id);
-
-        $images = Image::where('post_id', $id)->get();
+        $images = Image::where('post_id', $post->id)->get();
 
         $data = [
             'post' => $post,
@@ -143,12 +136,9 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(PostUpdateRequest $request, Post $post)
     {
-        $post = Post::find($id);
-        if(Auth::user()->can('posts.update', $post)) {
-
-            $images = Image::where('post_id', $id)->get();
+            $images = Image::where('post_id', $post->id)->get();
 
             foreach ($images as $image) {
                 Storage::delete(substr_replace($image->src, 'public', 0, 7));
@@ -179,7 +169,6 @@ class PostsController extends Controller
             }
 
             $post->save();
-        } else return 0;
     }
 
     /**
@@ -188,9 +177,8 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        $post = Post::find($id);
         if(Auth::user()->can('posts.delete', $post)) {
 
             foreach ($post->comments as $comment) {

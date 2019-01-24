@@ -10,8 +10,34 @@ use Auth;
 
 class CommentsController extends Controller
 {
-    public function store (Request $request) {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
         $user = Auth::user();
 
         $comment = new Comment;
@@ -20,13 +46,16 @@ class CommentsController extends Controller
         $comment->post_id = $request['post_id'];
 
         $user->comments()->save($comment);
-
     }
 
-    public function show ($id) {
-
-        $comment = Comment::find($id);
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Comment $comment)
+    {
         $user = User::find($comment->user_id);
 
         $answers = $comment->answers()->get();
@@ -40,12 +69,28 @@ class CommentsController extends Controller
             'user' => $user,
             'answers' => $answers
         ];
-
     }
 
-    public function update (Request $request, $id) {
-        $comment = Comment::find($id);
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Comment $comment)
+    {
         if(Auth::user()->can('comments.update', $comment)) {
             $comment->text = $request['text'];
 
@@ -53,12 +98,17 @@ class CommentsController extends Controller
         }
     }
 
-    public function destroy ($id) {
-            $comment = Comment::find($id);
-
-            if(Auth::user()->can('comments.delete', $comment)) {
-                $comment->answers()->delete();
-                $comment->delete();
-            }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Comment $comment)
+    {
+        if(Auth::user()->can('comments.delete', $comment)) {
+            $comment->answers()->delete();
+            $comment->delete();
+        }
     }
 }

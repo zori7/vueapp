@@ -1864,7 +1864,7 @@ __webpack_require__.r(__webpack_exports__);
         return false;
       }
 
-      axios.post('/api/answers/edit/' + this.answer.id, {
+      axios.put('/api/answers/' + this.answer.id, {
         'text': this.editedAnswer.text
       }).then(function () {
         _this3.update();
@@ -2035,7 +2035,7 @@ __webpack_require__.r(__webpack_exports__);
         return false;
       }
 
-      axios.post('/api/comments/edit/' + this.comment.id, {
+      axios.put('/api/comments/' + this.comment.id, {
         'text': this.editedComment.text
       }).then(function () {
         _this4.update();
@@ -50823,7 +50823,7 @@ var render = function() {
                           }
                         ],
                         staticClass: "form-control",
-                        attrs: { type: "text", placeholder: "email" },
+                        attrs: { type: "email", placeholder: "email" },
                         domProps: { value: _vm.user.email },
                         on: {
                           input: function($event) {

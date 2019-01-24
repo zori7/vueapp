@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest\UserStoreRequest;
+use App\Http\Requests\UserRequest\UserUpdateRequest;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Hash;
@@ -57,15 +59,13 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        if(Gate::allows('all')) {
             User::create([
                 'name' => $request['name'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
             ]);
-        }
     }
 
     /**
@@ -74,10 +74,8 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-
-        $user = User::find($id);
         $postsCount = $user->posts->count();
         $user->password = "";
         $data = ['user' => $user, 'postsCount' => $postsCount, 'isAdmin' => "No"];
@@ -97,11 +95,9 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
         if(Gate::allows('all')) {
-            $user = User::find($id);
-
             $data = [
                 'user' => $user
             ];
@@ -116,20 +112,17 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        if(Gate::allows('all')) {
             $data = $request->all();
-
-            $user = User::find($id);
 
             $user->name = $data['name'];
             $user->email = $data['email'];
             if ($request['password']) {
                 $user->password = Hash::make($data['password']);
             }
+
             $user->save();
-        }
     }
 
     /**
@@ -138,10 +131,9 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         if(Gate::allows('all')) {
-            $user = User::find($id);
 
             $posts = Post::where('user_id', $user->id)->get();
 
@@ -165,14 +157,14 @@ class UsersController extends Controller
                 $post->delete();
             }
 
-            $comments = Comment::where('user_id', $id)->get();
+            $comments = Comment::where('user_id', $user->id)->get();
 
             foreach ($comments as $comment) {
                 $comment->answers()->delete();
                 $comment->delete();
             }
 
-            $answers = Answer::where('user_id', $id)->get();
+            $answers = Answer::where('user_id', $user->id)->get();
 
             foreach ($answers as $answer) {
                 $answer->delete();
@@ -186,18 +178,18 @@ class UsersController extends Controller
         return Auth::user()->isAdmin();
     }
 
-    public function makeAdmin ($id) {
+    public function makeAdmin (User $user) {
 
         DB::table('role_user')->insert([
-            'user_id' => $id,
+            'user_id' => $user->id,
             'role_id' => 1
         ]);
 
     }
 
-    public function deleteAdmin ($id) {
+    public function deleteAdmin (User $user) {
 
-        DB::table('role_user')->where('user_id', $id)->delete();
+        DB::table('role_user')->where('user_id', $user->id)->delete();
 
     }
 }
