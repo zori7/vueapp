@@ -40,17 +40,17 @@ class AnswersController extends Controller
     public function update (Request $request, $id) {
         $answer = Answer::find($id);
 
-        $answer->text = $request['text'];
-
-        $answer->save();
-
+        if(Auth::user()->can('answers.update', $answer)) {
+            $answer->text = $request['text'];
+            $answer->save();
+        }
     }
 
     public function destroy ($id) {
-
         $answer = Answer::find($id);
 
-        $answer->delete();
-
+        if(Auth::user()->can('answers.delete', $answer)) {
+            $answer->delete();
+        }
     }
 }

@@ -145,41 +145,41 @@ class PostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-
-        $images = Image::where('post_id', $id)->get();
-
-        foreach($images as $image) {
-            Storage::delete(substr_replace($image->src, 'public', 0, 7));
-        }
-
-        foreach($images as $image) {
-            $image->delete();
-        }
-
-        $data = $request->all();
-
-
-
         $post = Post::find($id);
-        $post->name = $data['name'];
-        $post->text = $data['text'];
-        $post->img = 'storage/no-image.png';
-        $post->save();
+        if(Auth::user()->can('posts.update', $post)) {
 
-        if($request->file('images')) {
+            $images = Image::where('post_id', $id)->get();
 
-            $post->img = substr_replace(($request->file('images')[$request['main']]->store('public/posts')), 'storage', 0, 6);
-
-            foreach($request->file('images') as $key => $image) {
-                $img = new Image;
-                $img->src = substr_replace(($image->store('public/posts')), 'storage', 0, 6);
-                $img->post_id = $post->id;
-                $img->save();
+            foreach ($images as $image) {
+                Storage::delete(substr_replace($image->src, 'public', 0, 7));
             }
 
-        }
+            foreach ($images as $image) {
+                $image->delete();
+            }
 
-        $post->save();
+            $data = $request->all();
+
+            $post->name = $data['name'];
+            $post->text = $data['text'];
+            $post->img = 'storage/no-image.png';
+            $post->save();
+
+            if ($request->file('images')) {
+
+                $post->img = substr_replace(($request->file('images')[$request['main']]->store('public/posts')), 'storage', 0, 6);
+
+                foreach ($request->file('images') as $key => $image) {
+                    $img = new Image;
+                    $img->src = substr_replace(($image->store('public/posts')), 'storage', 0, 6);
+                    $img->post_id = $post->id;
+                    $img->save();
+                }
+
+            }
+
+            $post->save();
+        } else return 0;
     }
 
     /**
@@ -190,28 +190,25 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-
         $post = Post::find($id);
+        if(Auth::user()->can('posts.delete', $post)) {
 
-        foreach($post->comments as $comment) {
-            $comment->answers()->delete();
-        }
+            foreach ($post->comments as $comment) {
+                $comment->answers()->delete();
+            }
 
-        $post->comments()->delete();
+            $post->comments()->delete();
+            $images = Image::where('post_id', $post->id)->get();
 
+            foreach ($images as $image) {
+                Storage::delete(substr_replace($image->src, 'public', 0, 7));
+            }
+            foreach ($images as $image) {
+                $image->delete();
+            }
 
+            $post->delete();
 
-        $images = Image::where('post_id', $post->id)->get();
-
-        foreach($images as $image) {
-            Storage::delete(substr_replace($image->src, 'public', 0, 7));
-        }
-
-        foreach($images as $image) {
-            $image->delete();
-        }
-
-        $post->delete();
-
+        } else return 0;
     }
 }

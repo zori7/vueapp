@@ -48,14 +48,14 @@
             <div class="row justify-content-end my-2">
                 <div class="col-md-8 col-11">
 
-                    <form @submit.prevent="saveAnswer()" method="post">
+                    <form @submit.prevent="saveAnswer()" method="post" id="answerForm">
 
                         <div class="form-group">
-                            <input type="text" class="form-control" :id="'text_' + comment.id" v-model="answer.text" placeholder="Your comment here">
+                            <input  @blur="blur" type="text" class="form-control" :id="'text_' + comment.id" v-model="answer.text" placeholder="Your comment here">
                         </div>
 
                         <div class="form-group">
-                            <button v-if="answer.text" type="submit" class="btn btn-block btn-primary">Submit</button>
+                            <button type="button" v-if="answer.text" @mousedown.prevent="saveAnswer()" class="btn btn-block btn-primary">Submit</button>
                             <button v-else @click.prevent="showForm" class="btn btn-block btn-warning">Cancel</button>
                         </div>
 
@@ -83,7 +83,7 @@
                     text: ""
                 },
                 currentUser: this.$parent.currentUser,
-                isAdmin: this.$parent.isAdmin,
+                isAdmin: false,
                 editing: false,
                 editedComment: {
                     text: ""
@@ -98,6 +98,9 @@
         props: ['comment_id'],
         mounted () {
             this.update();
+            setTimeout(() => {
+                this.isAdmin = this.$parent.isAdmin;
+            }, 200);
         },
         methods: {
             update () {
@@ -178,9 +181,14 @@
                 }).then(() => {
                     this.update();
                     this.answer.text = "";
-                    this.answering = false;
                 });
 
+            },
+            blur () {
+                this.answer.text = "";
+                setTimeout(() => {
+                    this.answering = !this.answering;
+                }, 100);
             }
         }
 

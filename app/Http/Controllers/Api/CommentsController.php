@@ -46,17 +46,19 @@ class CommentsController extends Controller
     public function update (Request $request, $id) {
         $comment = Comment::find($id);
 
-        $comment->text = $request['text'];
+        if(Auth::user()->can('comments.update', $comment)) {
+            $comment->text = $request['text'];
 
-        $comment->save();
-
+            $comment->save();
+        }
     }
 
     public function destroy ($id) {
+            $comment = Comment::find($id);
 
-        $comment = Comment::find($id);
-
-        $comment->delete();
-
+            if(Auth::user()->can('comments.delete', $comment)) {
+                $comment->answers()->delete();
+                $comment->delete();
+            }
     }
 }

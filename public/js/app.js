@@ -1968,7 +1968,7 @@ __webpack_require__.r(__webpack_exports__);
         text: ""
       },
       currentUser: this.$parent.currentUser,
-      isAdmin: this.$parent.isAdmin,
+      isAdmin: false,
       editing: false,
       editedComment: {
         text: ""
@@ -1982,31 +1982,36 @@ __webpack_require__.r(__webpack_exports__);
   },
   props: ['comment_id'],
   mounted: function mounted() {
+    var _this = this;
+
     this.update();
+    setTimeout(function () {
+      _this.isAdmin = _this.$parent.isAdmin;
+    }, 200);
   },
   methods: {
     update: function update() {
-      var _this = this;
+      var _this2 = this;
 
       axios.get('/api/comments/' + this.comment_id).then(function (response) {
-        _this.comment = response.data['comment'];
-        _this.comment.userName = response.data['user']['name'];
-        _this.editedComment.text = _this.comment.text;
-        _this.answers = response.data['answers'];
+        _this2.comment = response.data['comment'];
+        _this2.comment.userName = response.data['user']['name'];
+        _this2.editedComment.text = _this2.comment.text;
+        _this2.answers = response.data['answers'];
 
         if (response.data['answers'].length > 0) {
           setTimeout(function () {
             var arrow = $("<div/>").addClass('arrow');
-            $('#answer_' + _this.comment_id + '_0').find('div').find('div').find('div')[0].prepend(arrow[0]);
+            $('#answer_' + _this2.comment_id + '_0').find('div').find('div').find('div')[0].prepend(arrow[0]);
           }, 500);
         }
       });
     },
     deleteComment: function deleteComment(id) {
-      var _this2 = this;
+      var _this3 = this;
 
       axios.delete('/api/comments/' + id).then(function () {
-        _this2.$parent.updateComments();
+        _this3.$parent.updateComments();
       });
     },
     edit: function edit() {
@@ -2018,7 +2023,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     updateComment: function updateComment() {
-      var _this3 = this;
+      var _this4 = this;
 
       if (this.editedComment.text === "") {
         alert("Your comment is empty!");
@@ -2033,25 +2038,25 @@ __webpack_require__.r(__webpack_exports__);
       axios.post('/api/comments/edit/' + this.comment.id, {
         'text': this.editedComment.text
       }).then(function () {
-        _this3.update();
+        _this4.update();
 
-        _this3.editing = false;
+        _this4.editing = false;
       });
     },
     showForm: function showForm() {
-      var _this4 = this;
+      var _this5 = this;
 
       if (this.answering) {
         this.answering = false;
       } else {
         this.answering = true;
         setTimeout(function () {
-          $('#text_' + _this4.comment_id).focus();
+          $('#text_' + _this5.comment_id).focus();
         }, 200);
       }
     },
     saveAnswer: function saveAnswer() {
-      var _this5 = this;
+      var _this6 = this;
 
       if (this.answer.text === "") {
         alert("Your comment is empty!");
@@ -2067,11 +2072,18 @@ __webpack_require__.r(__webpack_exports__);
         'text': this.answer.text,
         'comment_id': this.comment_id
       }).then(function () {
-        _this5.update();
+        _this6.update();
 
-        _this5.answer.text = "";
-        _this5.answering = false;
+        _this6.answer.text = "";
       });
+    },
+    blur: function blur() {
+      var _this7 = this;
+
+      this.answer.text = "";
+      setTimeout(function () {
+        _this7.answering = !_this7.answering;
+      }, 100);
     }
   }
 });
@@ -7449,7 +7461,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -49431,7 +49443,7 @@ var render = function() {
                 _c(
                   "form",
                   {
-                    attrs: { method: "post" },
+                    attrs: { method: "post", id: "answerForm" },
                     on: {
                       submit: function($event) {
                         $event.preventDefault()
@@ -49458,6 +49470,7 @@ var render = function() {
                         },
                         domProps: { value: _vm.answer.text },
                         on: {
+                          blur: _vm.blur,
                           input: function($event) {
                             if ($event.target.composing) {
                               return
@@ -49474,7 +49487,13 @@ var render = function() {
                             "button",
                             {
                               staticClass: "btn btn-block btn-primary",
-                              attrs: { type: "submit" }
+                              attrs: { type: "button" },
+                              on: {
+                                mousedown: function($event) {
+                                  $event.preventDefault()
+                                  _vm.saveAnswer()
+                                }
+                              }
                             },
                             [_vm._v("Submit")]
                           )

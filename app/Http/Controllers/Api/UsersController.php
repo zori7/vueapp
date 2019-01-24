@@ -14,6 +14,7 @@ use App\Answer;
 use DB;
 use App\Image;
 use Illuminate\Support\Facades\Storage;
+use Gate;
 
 class UsersController extends Controller
 {
@@ -58,13 +59,13 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-
-        User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-        ]);
-
+        if(Gate::allows('all')) {
+            User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password']),
+            ]);
+        }
     }
 
     /**
@@ -98,14 +99,14 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
+        if(Gate::allows('all')) {
+            $user = User::find($id);
 
-        $user = User::find($id);
-
-        $data = [
-            'user' => $user
-        ];
-        return $data;
-
+            $data = [
+                'user' => $user
+            ];
+            return $data;
+        }
     }
 
     /**
@@ -117,18 +118,18 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
+        if(Gate::allows('all')) {
+            $data = $request->all();
 
-        $data = $request->all();
+            $user = User::find($id);
 
-        $user = User::find($id);
-
-        $user->name = $data['name'];
-        $user->email = $data['email'];
-        if($request['password']) {
-            $user->password = Hash::make($data['password']);
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            if ($request['password']) {
+                $user->password = Hash::make($data['password']);
+            }
+            $user->save();
         }
-        $user->save();
-
     }
 
     /**
@@ -139,62 +140,50 @@ class UsersController extends Controller
      */
     public function destroy($id)
     {
+        if(Gate::allows('all')) {
+            $user = User::find($id);
 
-        $user = User::find($id);
+            $posts = Post::where('user_id', $user->id)->get();
 
-        $posts = Post::where('user_id', $user->id)->get();
+            foreach ($posts as $post) {
+                foreach ($post->comments as $comment) {
+                    $comment->answers()->delete();
+                }
 
-        foreach($posts as $post) {
-            foreach($post->comments as $comment) {
+                $post->comments()->delete();
+
+                $images = Image::where('post_id', $post->id)->get();
+
+                foreach ($images as $image) {
+                    Storage::delete(substr_replace($image->src, 'public', 0, 7));
+                }
+
+                foreach ($images as $image) {
+                    $image->delete();
+                }
+
+                $post->delete();
+            }
+
+            $comments = Comment::where('user_id', $id)->get();
+
+            foreach ($comments as $comment) {
                 $comment->answers()->delete();
+                $comment->delete();
             }
 
-            $post->comments()->delete();
+            $answers = Answer::where('user_id', $id)->get();
 
-            $images = Image::where('post_id', $post->id)->get();
-
-            foreach($images as $image) {
-                Storage::delete(substr_replace($image->src, 'public', 0, 7));
+            foreach ($answers as $answer) {
+                $answer->delete();
             }
 
-            foreach($images as $image) {
-                $image->delete();
-            }
-
-            $post->delete();
+            $user->delete();
         }
-
-        $comments = Comment::where('user_id', $id)->get();
-
-        foreach($comments as $comment) {
-            $comment->answers()->delete();
-            $comment->delete();
-        }
-
-        $answers = Answer::where('user_id', $id)->get();
-
-        foreach($answers as $answer) {
-            $answer->delete();
-        }
-
-        $user->delete();
-
     }
 
     public function isAdmin () {
-
-        $user = Auth::user();
-
-        $data = [
-            'isAdmin' => false,
-            'user' => $user
-        ];
-
-        foreach($user->roles as $role) {
-            if($role->name == 'admin') $data['isAdmin'] = true;
-        }
-        return $data;
-
+        return Auth::user()->isAdmin();
     }
 
     public function makeAdmin ($id) {

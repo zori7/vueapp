@@ -50,4 +50,18 @@ class User extends Authenticatable
     public function privateMessages () {
         return $this->hasMany('App\PrivateMessage');
     }
+
+    public function isAdmin () {
+
+        $data = [
+            'isAdmin' => false,
+            'user' => $this
+        ];
+
+        foreach($this->roles as $role) {
+            if($role->name == 'admin') $data['isAdmin'] = true;
+        }
+
+        return $data;
+    }
 }
