@@ -13,6 +13,7 @@ use DB;
 use Illuminate\Support\Facades\Storage;
 use App\User;
 use App\Image;
+use App\Library\Image as Img;
 
 class PostsController extends Controller
 {
@@ -52,9 +53,8 @@ class PostsController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function store(PostStoreRequest $request)
+    public function store(PostStoreRequest $request, Img $imgHelp)
     {
-
         $post = new Post;
 
         $post->name = $request['name'];
@@ -64,18 +64,15 @@ class PostsController extends Controller
         $post->save();
 
         if($request->file('images')) {
-
-            $post->img = substr_replace(($request->file('images')[$request['main']]->store('public/posts')), 'storage', 0, 6);
+            $post->img = $imgHelp->storePostImage($request->file('images')[$request['main']]);
 
             foreach($request->file('images') as $key => $image) {
                 $img = new Image;
-                $img->src = substr_replace(($image->store('public/posts')), 'storage', 0, 6);
+                $img->src = $imgHelp->storePostImage($image);
                 $img->post_id = $post->id;
                 $img->save();
             }
-
         }
-
         $post->save();
     }
 
@@ -142,12 +139,12 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostUpdateRequest $request, Post $post)
+    public function update(PostUpdateRequest $request, Post $post, Img $imgHelp)
     {
             $images = Image::where('post_id', $post->id)->get();
 
             foreach ($images as $image) {
-                Storage::delete(substr_replace($image->src, 'public', 0, 7));
+                $imgHelp->deleteImage($image->src);
             }
 
             foreach ($images as $image) {
@@ -162,16 +159,14 @@ class PostsController extends Controller
             $post->save();
 
             if ($request->file('images')) {
-
-                $post->img = substr_replace(($request->file('images')[$request['main']]->store('public/posts')), 'storage', 0, 6);
+                $post->img = $imgHelp->storePostImage($request->file('images')[$request['main']]);
 
                 foreach ($request->file('images') as $key => $image) {
                     $img = new Image;
-                    $img->src = substr_replace(($image->store('public/posts')), 'storage', 0, 6);
+                    $img->src = $imgHelp->storePostImage($image);
                     $img->post_id = $post->id;
                     $img->save();
                 }
-
             }
 
             $post->save();
@@ -183,7 +178,7 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PostDestroyRequest $request, Post $post)
+    public function destroy(PostDestroyRequest $request, Post $post, Img $imgHelp)
     {
             foreach ($post->comments as $comment) {
                 $comment->answers()->delete();
@@ -193,7 +188,7 @@ class PostsController extends Controller
             $images = Image::where('post_id', $post->id)->get();
 
             foreach ($images as $image) {
-                Storage::delete(substr_replace($image->src, 'public', 0, 7));
+                $imgHelp->deleteImage($image->src);
             }
             foreach ($images as $image) {
                 $image->delete();
