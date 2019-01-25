@@ -10,7 +10,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class PrivateMessage implements ShouldBroadcast
+class GlobalMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -34,6 +34,6 @@ class PrivateMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('pm.'.$this->data['channel_id']);
+        return new Channel('global');
     }
 }

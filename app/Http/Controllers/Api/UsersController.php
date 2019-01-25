@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\UserRequest\UserDestroyRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\UserRequest\UserStoreRequest;
 use App\Http\Requests\UserRequest\UserUpdateRequest;
@@ -18,6 +19,7 @@ use App\Image;
 use Illuminate\Support\Facades\Storage;
 use Gate;
 use App\PrivateMessage as Message;
+use App\GlobalMessage;
 
 class UsersController extends Controller
 {
@@ -132,47 +134,52 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(UserDestroyRequest $request, User $user)
     {
-        if(Gate::allows('all')) {
+        $posts = $user
+            ->posts()
+            ->with([
+                'comments'
+            ])->get();
 
-            $posts = Post::where('user_id', $user->id)->get();
+        $user->privateMessages()->delete();
+        Message::where('target_user_id', $user->id)->delete();
+        GlobalMessage::where('user_id', $user->id)->delete();
 
-            foreach ($posts as $post) {
-                foreach ($post->comments as $comment) {
-                    $comment->answers()->delete();
-                }
-
-                $post->comments()->delete();
-
-                $images = Image::where('post_id', $post->id)->get();
-
-                foreach ($images as $image) {
-                    Storage::delete(substr_replace($image->src, 'public', 0, 7));
-                }
-
-                foreach ($images as $image) {
-                    $image->delete();
-                }
-
-                $post->delete();
-            }
-
-            $comments = Comment::where('user_id', $user->id)->get();
-
-            foreach ($comments as $comment) {
+        foreach ($posts as $post) {
+            foreach ($post->comments as $comment) {
                 $comment->answers()->delete();
-                $comment->delete();
             }
 
-            $answers = Answer::where('user_id', $user->id)->get();
+            $post->comments()->delete();
 
-            foreach ($answers as $answer) {
-                $answer->delete();
+            $images = Image::where('post_id', $post->id)->get();
+
+            foreach ($images as $image) {
+                Storage::delete(substr_replace($image->src, 'public', 0, 7));
             }
 
-            $user->delete();
+            foreach ($images as $image) {
+                $image->delete();
+            }
+
+            $post->delete();
         }
+
+        $comments = Comment::where('user_id', $user->id)->get();
+
+        foreach ($comments as $comment) {
+            $comment->answers()->delete();
+            $comment->delete();
+        }
+
+        $answers = Answer::where('user_id', $user->id)->get();
+
+        foreach ($answers as $answer) {
+            $answer->delete();
+        }
+
+        $user->delete();
     }
 
     public function isAdmin () {

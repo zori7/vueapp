@@ -18,6 +18,7 @@ import post from "./components/Post.vue";
 import postedit from "./components/PostEdit.vue";
 import postcreate from "./components/PostCreate.vue";
 import privatechat from "./components/PrivateChat.vue";
+import globalchat from "./components/GlobalChat.vue";
 import privatemessages from "./components/PrivateMessages.vue";
 
 const routes = [
@@ -27,6 +28,7 @@ const routes = [
     { path: '/posts', component: posts },
     { path: '/users', component: users },
     { path: '/messages', component: privatemessages },
+    { path: '/global', component: globalchat },
 
     // Shows
 

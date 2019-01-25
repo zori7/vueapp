@@ -70,6 +70,14 @@
                             @endif
                         </li>
 
+                        <li class="nav-item mx-2">
+                            @if (Request::is('login') || Request::is('register') || Request::is('password/*'))
+                                <a href="{{ route('login') }}" class="nav-link">Global chat</a>
+                            @else
+                                <router-link to="/global" class="nav-link">Global chat</router-link>
+                            @endif
+                        </li>
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->

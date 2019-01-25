@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <comment v-for="comment in comments" :comment_id="comment" :key="comment"></comment>
+        <comment v-for="comment in comments" :comment_id="comment.id" :key="comment.id"></comment>
 
     </div>
 </template>

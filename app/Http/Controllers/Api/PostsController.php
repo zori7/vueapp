@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\PostRequest\PostDestroyRequest;
 use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest\PostStoreRequest;
 use App\Http\Requests\PostRequest\PostUpdateRequest;
@@ -86,18 +87,23 @@ class PostsController extends Controller
      */
     public function show(Post $post)
     {
-
+        $post->load([
+            'user',
+            'images' => function ($query) use ($post) {
+                $query->where('src', '!=', $post->img);
+            },
+            'comments' => function ($query) {
+                $query->orderBy('created_at', 'desc');
+            }
+        ]);
+        
         $user = Auth::user()->id;
 
-        $username = User::find($post->user_id)->name;
+        $username = $post->user->name;
+        $images = $post->images;
 
-        $images = Image::where('post_id', $post->id)->where('src', '!=', $post->img)->get();
-
-        $comments = $post->comments()->orderBy('created_at', 'desc')->get();
-
-        foreach($comments as $key => $comment) {
-            $comments[$key] = $comment->id;
-        }
+        $comments = $post->comments;
+        $comments = $comments->keyBy('id');
 
         $data = [
             'username' => $username,
@@ -177,10 +183,8 @@ class PostsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy(PostDestroyRequest $request, Post $post)
     {
-        if(Auth::user()->can('posts.delete', $post)) {
-
             foreach ($post->comments as $comment) {
                 $comment->answers()->delete();
             }
@@ -196,7 +200,5 @@ class PostsController extends Controller
             }
 
             $post->delete();
-
-        } else return 0;
     }
 }

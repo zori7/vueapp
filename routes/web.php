@@ -24,11 +24,14 @@ Route::prefix('api')->group(function () {
     Route::resource('comments', 'Api\CommentsController');
     Route::resource('answers', 'Api\AnswersController');
 
-    Route::post('/readmessage/{message}', 'Api\UsersController@readMessage');
-    Route::post('/readall/{user}', 'Api\UsersController@readAllMessages');
+    Route::post('readmessage/{message}', 'Api\UsersController@readMessage');
+    Route::post('readall/{user}', 'Api\UsersController@readAllMessages');
 
-    Route::get('/isadmin', 'Api\UsersController@isAdmin');
+    Route::get('isadmin', 'Api\UsersController@isAdmin');
 
     Route::post('admin/make/{user}', 'Api\UsersController@makeAdmin');
     Route::post('admin/delete/{user}', 'Api\UsersController@deleteAdmin');
+
+    Route::post('global', 'Api\GlobalChatController@store');
+    Route::get('global', 'Api\GlobalChatController@index');
 });

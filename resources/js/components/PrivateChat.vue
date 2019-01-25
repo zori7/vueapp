@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h2 class="text-center">{{ targetUser.name }}</h2>
+        <h2 class="text-center"><router-link :to="'/user/' + targetUser.id">{{ targetUser.name }}</router-link></h2>
         <div id="chat" class="container-fluid">
 
 
@@ -27,7 +27,6 @@
             </form>
 
         </div>
-
 
     </div>
 </template>
