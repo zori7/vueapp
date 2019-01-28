@@ -16,7 +16,7 @@ class CreateGlobalMessagesTable extends Migration
         Schema::create('global_messages', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('text');
             $table->timestamps();
         });

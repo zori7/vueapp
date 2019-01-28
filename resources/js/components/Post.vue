@@ -108,8 +108,12 @@
                     this.comments = response.data['comments'];
                     this.user.name = response.data['username'];
                     this.user.id = response.data['userid'];
-                    this.images.push({src: this.post.img});
+
                     $.each(response.data['images'], (key, image) => {
+                        if(image.id === this.post.main_id) {
+                            this.images.unshift(image);
+                            return true;
+                        }
                         this.images.push(image);
                     });
 

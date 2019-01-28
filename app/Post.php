@@ -9,7 +9,7 @@ class Post extends Model
     protected $fillable = [
         'name',
         'text',
-        'img',
+        'main_id',
         'user_id'
     ];
 
@@ -18,7 +18,11 @@ class Post extends Model
     }
 
     public function images () {
-        return $this->hasMany('App\Image');
+        return $this->morphMany('App\Image', 'imageable');
+    }
+
+    public function main_image () {
+        return $this->belongsTo('App\Image', 'main_id');
     }
 
     public function comments () {

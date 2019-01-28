@@ -39,6 +39,6 @@ class ClearChat extends Command
      */
     public function handle()
     {
-        DB::table('global_messages')->where('created_at', '<', Carbon::now()->subMinutes(10))->delete();
+        DB::table('global_messages')->where('created_at', '<', Carbon::now()->subMinutes(60))->delete();
     }
 }

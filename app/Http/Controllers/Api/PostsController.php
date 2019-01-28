@@ -13,7 +13,7 @@ use DB;
 use Illuminate\Support\Facades\Storage;
 use App\User;
 use App\Image;
-use App\Library\Image as Img;
+use App\Services\ImageService;
 
 class PostsController extends Controller
 {
@@ -29,10 +29,9 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = DB::table('posts')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $posts = Post::with('main_image')->orderBy('created_at', 'asc')->get();
 
+dd($posts);
         return $posts;
     }
 
@@ -53,27 +52,25 @@ class PostsController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function store(PostStoreRequest $request, Img $imgHelp)
+    public function store(PostStoreRequest $request, ImageService $imageService)
     {
         $post = new Post;
 
         $post->name = $request['name'];
         $post->text = $request['text'];
-        $post->img = 'storage/no-image.png';
         $post->user_id = Auth::user()->id;
         $post->save();
 
         if($request->file('images')) {
-            $post->img = $imgHelp->storePostImage($request->file('images')[$request['main']]);
-
             foreach($request->file('images') as $key => $image) {
-                $img = new Image;
-                $img->src = $imgHelp->storePostImage($image);
-                $img->post_id = $post->id;
-                $img->save();
+                if($key == $request['main']) {
+                    $post->main_id = $imageService->save($image, $post)->id;
+                    $post->save();
+                    continue;
+                }
+                $imageService->save($image, $post);
             }
         }
-        $post->save();
     }
 
     /**
@@ -86,9 +83,7 @@ class PostsController extends Controller
     {
         $post->load([
             'user',
-            'images' => function ($query) use ($post) {
-                $query->where('src', '!=', $post->img);
-            },
+            'images',
             'comments' => function ($query) {
                 $query->orderBy('created_at', 'desc');
             }
@@ -122,7 +117,7 @@ class PostsController extends Controller
      */
     public function edit(Post $post)
     {
-        $images = Image::where('post_id', $post->id)->get();
+        $images = Image::where('imageable_id', $post->id)->get();
 
         $data = [
             'post' => $post,
@@ -141,7 +136,7 @@ class PostsController extends Controller
      */
     public function update(PostUpdateRequest $request, Post $post, Img $imgHelp)
     {
-            $images = Image::where('post_id', $post->id)->get();
+            $images = Image::where('imageable_id', $post->id)->get();
 
             foreach ($images as $image) {
                 $imgHelp->deleteImage($image->src);
@@ -164,7 +159,8 @@ class PostsController extends Controller
                 foreach ($request->file('images') as $key => $image) {
                     $img = new Image;
                     $img->src = $imgHelp->storePostImage($image);
-                    $img->post_id = $post->id;
+                    $img->imageable_id = $post->id;
+                    $img->imageable_type = 'App\Post';
                     $img->save();
                 }
             }
@@ -185,7 +181,7 @@ class PostsController extends Controller
             }
 
             $post->comments()->delete();
-            $images = Image::where('post_id', $post->id)->get();
+            $images = Image::where('imageable_id', $post->id)->get();
 
             foreach ($images as $image) {
                 $imgHelp->deleteImage($image->src);

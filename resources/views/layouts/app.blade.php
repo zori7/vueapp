@@ -93,6 +93,11 @@
                                 </li>
                             @endif
                         @else
+                            @if($avatar)
+                                <li>
+                                    <img src="{{ $avatar }}" class="userAvatar mx-3" alt="" class="img-fluid">
+                                </li>
+                            @endif
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>

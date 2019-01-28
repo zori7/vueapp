@@ -17,9 +17,9 @@ class CreateAnswersTable extends Migration
             $table->increments('id');
             $table->string('text');
             $table->unsignedInteger('comment_id');
-            $table->foreign('comment_id')->references('id')->on('comments');
+            $table->foreign('comment_id')->references('id')->on('comments')->onDelete('cascade');
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

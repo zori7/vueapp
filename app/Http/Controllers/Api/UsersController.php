@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Gate;
 use App\PrivateMessage as Message;
 use App\GlobalMessage;
+use App\Library\Image as Img;
 
 class UsersController extends Controller
 {
@@ -80,11 +81,14 @@ class UsersController extends Controller
     public function show(User $user)
     {
         $postsCount = $user->posts->count();
-        $user->password = "";
-        $data = ['user' => $user, 'postsCount' => $postsCount, 'isAdmin' => "No"];
+        $data = ['user' => $user, 'postsCount' => $postsCount, 'isAdmin' => "No", 'avatar' => 'storage/no-user-image.png'];
 
         foreach($user->roles as $role) {
             if($role->name == 'admin') $data['isAdmin'] = "Yes";
+        }
+
+        if($user->image) {
+            $data['avatar'] = $user->image->src;
         }
 
         return $data;
@@ -115,16 +119,28 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request, User $user, Img $imgHelp)
     {
             $data = $request->all();
 
             $user->name = $data['name'];
             $user->email = $data['email'];
+
             if ($request['password']) {
                 $user->password = Hash::make($data['password']);
             }
 
+            if($request->file('file')) {
+                if($user->image) {
+                    $imgHelp->deleteImage($user->image->src);
+                    $user->image()->delete();
+                }
+                $avatar = new Image;
+                $avatar->src = $imgHelp->storeUserImage($request->file('file'));
+                $avatar->imageable_id = $user->id;
+                $avatar->imageable_type = 'App\User';
+                $avatar->save();
+            }
             $user->save();
     }
 
@@ -134,13 +150,18 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(UserDestroyRequest $request, User $user)
+    public function destroy(UserDestroyRequest $request, User $user, Img $imgHelp)
     {
         $posts = $user
             ->posts()
             ->with([
                 'comments'
             ])->get();
+
+        if($avatar = $user->image) {
+            $imgHelp->deleteImage($avatar->src);
+            $avatar->delete();
+        }
 
         $user->privateMessages()->delete();
         Message::where('target_user_id', $user->id)->delete();
@@ -156,7 +177,7 @@ class UsersController extends Controller
             $images = Image::where('post_id', $post->id)->get();
 
             foreach ($images as $image) {
-                Storage::delete(substr_replace($image->src, 'public', 0, 7));
+                $imgHelp->deleteImage($image->src);
             }
 
             foreach ($images as $image) {
@@ -218,5 +239,10 @@ class UsersController extends Controller
                 ['message_read', '=', 0]
             ])->update(['message_read' => 1]);
         }
+    }
+
+    public function deleteAvatar (User $user, Img $imgHelp) {
+        $imgHelp->deleteImage($user->image->src);
+        $user->image()->delete();
     }
 }

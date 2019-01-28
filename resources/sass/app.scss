@@ -30,3 +30,10 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
+
+.userAvatar {
+  height: 40px;
+  width: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}

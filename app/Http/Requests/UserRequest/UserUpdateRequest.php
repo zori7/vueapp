@@ -4,6 +4,7 @@ namespace App\Http\Requests\UserRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Gate;
+use Auth;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class UserUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('all');
+        return Gate::allows('all') || $this->route('user')->id == Auth::user()->id;
     }
 
     /**

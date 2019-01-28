@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class UsersTableSeeder extends Seeder
 {
@@ -18,7 +19,8 @@ class UsersTableSeeder extends Seeder
             DB::table('users')->insert([
                 'name' => 'User num ' . $num,
                 'email' => 'user' . $num . '@mail.ru',
-                'password' => Hash::make(($num * $num + $num - 2 * ($num - 1)))
+                'password' => Hash::make(($num * $num + $num - 2 * ($num - 1))),
+                'created_at' => Carbon::now()
             ]);
         }
     }

@@ -28,10 +28,12 @@ class HomeController extends Controller
     public function index()
     {
 
+        $user = Auth::user();
+
         $fromUsers = [];
 
         $messages = DB::table('private_messages')->where([
-            ['target_user_id', '=', Auth::user()->id],
+            ['target_user_id', '=', $user->id],
             ['message_read', '=', 0]
         ])->get();
 
@@ -41,7 +43,8 @@ class HomeController extends Controller
             }
         }
         return view('home', [
-            'messagesCount' => count($fromUsers)
+            'messagesCount' => count($fromUsers),
+            'avatar' => $user->image ? $user->image->src : false
         ]);
     }
 }
