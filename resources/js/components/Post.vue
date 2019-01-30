@@ -12,7 +12,7 @@
                 <div class="carousel-inner">
 
                     <div class="carousel-item" v-for="image in images">
-                        <img class="d-block w-100" :src="image.src" alt="">
+                        <img class="img-fluid" :src="image.src" alt="">
                     </div>
 
                 </div>

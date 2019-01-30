@@ -165,7 +165,6 @@ class UsersController extends Controller
 
         $user->privateMessages()->delete();
         Message::where('target_user_id', $user->id)->delete();
-        GlobalMessage::where('user_id', $user->id)->delete();
 
         foreach ($posts as $post) {
             foreach ($post->comments as $comment) {

@@ -5,7 +5,7 @@
 
         <div v-for="post in collection" class="post row rounded m-3 p-2">
                 <div class="col-md-3">
-                    <img class="img-fluid mx-auto" v-bind:src="post.">
+                    <img class="img-fluid mx-auto" v-bind:src="post.src ? post.src : '/img/no-image.png'">
                 </div>
                 <div class="body col-md-9">
 
@@ -48,9 +48,8 @@
             axios.get('/api/posts').then((response) => {
                 this.posts = response.data;
                 $.each(this.posts, (key, post) => {
-                    post.img = post.images
+                    this.setPage(1);
                 });
-                this.setPage(1);
             });
 
             axios.get('/api/isadmin').then((response) => {

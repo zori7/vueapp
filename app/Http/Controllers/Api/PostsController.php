@@ -29,9 +29,12 @@ class PostsController extends Controller
      */
     public function index()
     {
-        $posts = Post::with('main_image')->orderBy('created_at', 'asc')->get();
+        $posts = Post::with('main_image')->orderBy('created_at', 'desc')->get();
 
-dd($posts);
+        foreach($posts as $post) {
+            if($post->main_image) $post->src = $post->main_image->src;
+        }
+
         return $posts;
     }
 
@@ -52,7 +55,7 @@ dd($posts);
      * @return \Illuminate\Http\Response
      */
 
-    public function store(PostStoreRequest $request, ImageService $imageService)
+    public function store(PostStoreRequest $request)
     {
         $post = new Post;
 
@@ -64,11 +67,11 @@ dd($posts);
         if($request->file('images')) {
             foreach($request->file('images') as $key => $image) {
                 if($key == $request['main']) {
-                    $post->main_id = $imageService->save($image, $post)->id;
+                    $post->main_id = ImageService::save($image, $post)->id;
                     $post->save();
                     continue;
                 }
-                $imageService->save($image, $post);
+                ImageService::save($image, $post);
             }
         }
     }
@@ -95,7 +98,6 @@ dd($posts);
         $images = $post->images;
 
         $comments = $post->comments;
-        $comments = $comments->keyBy('id');
 
         $data = [
             'username' => $username,
@@ -117,13 +119,10 @@ dd($posts);
      */
     public function edit(Post $post)
     {
-        $images = Image::where('imageable_id', $post->id)->get();
-
         $data = [
             'post' => $post,
-            'files' => $images
+            'files' => $post->images
         ];
-
         return $data;
     }
 
@@ -134,38 +133,31 @@ dd($posts);
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(PostUpdateRequest $request, Post $post, Img $imgHelp)
+    public function update(PostUpdateRequest $request, Post $post)
     {
-            $images = Image::where('imageable_id', $post->id)->get();
+        $images = $post->images;
 
-            foreach ($images as $image) {
-                $imgHelp->deleteImage($image->src);
-            }
+        foreach ($images as $image) {
+            ImageService::delete($image->src, $image);
+        }
 
-            foreach ($images as $image) {
-                $image->delete();
-            }
+        $data = $request->all();
 
-            $data = $request->all();
+        $post->name = $data['name'];
+        $post->text = $data['text'];
+        $post->save();
 
-            $post->name = $data['name'];
-            $post->text = $data['text'];
-            $post->img = 'storage/no-image.png';
-            $post->save();
-
-            if ($request->file('images')) {
-                $post->img = $imgHelp->storePostImage($request->file('images')[$request['main']]);
-
-                foreach ($request->file('images') as $key => $image) {
-                    $img = new Image;
-                    $img->src = $imgHelp->storePostImage($image);
-                    $img->imageable_id = $post->id;
-                    $img->imageable_type = 'App\Post';
-                    $img->save();
+        if($request->file('images')) {
+            foreach($request->file('images') as $key => $image) {
+                if($key == $request['main']) {
+                    $post->main_id = ImageService::save($image, $post)->id;
+                    $post->save();
+                    continue;
                 }
+                ImageService::save($image, $post);
             }
-
-            $post->save();
+        }
+        $post->save();
     }
 
     /**
