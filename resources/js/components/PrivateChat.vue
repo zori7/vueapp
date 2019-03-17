@@ -42,7 +42,7 @@
                 targetUser: {}
             }
         },
-        props: ['id', 'don'],
+        props: ['id', 'wiffworf'],
         mounted () {
             axios.get('/api/isadmin').then((response) => {
                 this.currentUser = response.data['user'];
